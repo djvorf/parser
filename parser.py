@@ -1,4 +1,5 @@
 import requests
+import csv
 
 from bs4 import BeautifulSoup
 
@@ -11,6 +12,19 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
     'accept': '*/*',
 }
+
+
+def save(items, path):
+    '''Сохранение в SCV'''
+    with open(path, 'w', newline='') as file:
+        writer = csv.writer(file, delimiter=';')
+        writer.writerow([
+            'Название', 'Ссылка', 'Дата', 'Колличество комментариев', 'Текст статьи'
+        ])
+        for item in items:
+            writer.writerow([
+                item['title'], item['href'], item['date'], item['com'], item['text']
+            ])
 
 
 def get_HTML(url, params=None):
@@ -77,6 +91,7 @@ def parse():
             except:
                 # Если будет второй вид странички выполняется второй метод
                 articles[i]['text'] = add_Text_For_Two_Page(article_html.text)
+        save(articles, 'articles.csv')
         print(articles)
     else:
         print("WTF man?")
