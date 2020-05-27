@@ -16,15 +16,21 @@ HEADERS = {
 
 def save(items, path):
     '''Сохранение в SCV'''
-    with open(path, 'w', newline='') as file:
-        writer = csv.writer(file, delimiter=';')
-        writer.writerow([
-            'Название', 'Ссылка', 'Дата', 'Колличество комментариев', 'Текст статьи'
-        ])
-        for item in items:
+    try:
+        with open(path, 'w', newline='') as file:
+            writer = csv.writer(file, delimiter=';')
             writer.writerow([
-                item['title'], item['href'], item['date'], item['com'], item['text']
+                'Название', 'Ссылка', 'Дата', 'Колличество комментариев', 'Текст статьи'
             ])
+            for item in items:
+                try:
+                    writer.writerow([
+                        item['title'], item['href'], item['date'], item['com'], item['text']
+                    ])
+                except:
+                    print(f"Ошибка сохранения {item}")
+    except:
+        print('Закройте фаил')
 
 
 def get_HTML(url, params=None):
@@ -81,7 +87,7 @@ def parse():
         articles = get_Content(html.text)
         for i in range(len(articles)):
             try:
-                print(f"Парсинг статьи {i} из {len(articles)}")
+                print(f"Парсинг статьи {i + 1} из {len(articles)}")
                 #Получения ссылки на страничку
                 article_url = articles[i]['href']
                 #Получени HTML страницы
@@ -92,7 +98,7 @@ def parse():
                 # Если будет второй вид странички выполняется второй метод
                 articles[i]['text'] = add_Text_For_Two_Page(article_html.text)
         save(articles, 'articles.csv')
-        print(articles)
+        #print(articles)
     else:
         print("WTF man?")
 
